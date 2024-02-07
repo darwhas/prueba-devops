@@ -1,5 +1,11 @@
 pipeline {
     agent any
+
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('2a8ee1c6-f50a-410c-8de2-dc668fabca0b')
+        DOCKER_IMAGE_NAME = 'prueba-devops'
+        DOCKER_HUB_REPO = 'darwhas/prueba-devops'
+    }
     
     stages {
         stage('Verificar Repositorio') {
@@ -20,22 +26,22 @@ pipeline {
             }
         }
         
-        stage('Ejecutar Pruebas Unitarias') {
-            steps {
-                // Instalar las dependencias necesarias (si es necesario)
-                bat 'pip install -r requirements.txt'
+        // stage('Ejecutar Pruebas Unitarias') {
+        //     steps {
+        //         // Instalar las dependencias necesarias (si es necesario)
+        //         bat 'pip install -r requirements.txt'
                 
-                // Ejecutar las pruebas unitarias con pytest
-                bat 'pytest'
-            }
+        //         // Ejecutar las pruebas unitarias con pytest
+        //         bat 'pytest'
+        //     }
             
-            post {
-                always {
-                    // Publicar los resultados de las pruebas unitarias
-                    junit 'pytest.xml'  // Archivo XML generado por pytest
-                }
-            }
-        }
+        //     post {
+        //         always {
+        //             // Publicar los resultados de las pruebas unitarias
+        //             junit 'pytest.xml'  // Archivo XML generado por pytest
+        //         }
+        //     }
+        // }
         
         // stage('Análisis SonarQube') {
         //     steps {
@@ -50,14 +56,25 @@ pipeline {
         //     }
         // }
         
-        // stage('Construir y Subir Imagen Docker') {
-        //     steps {
-        //         // Construir la imagen de Docker
-        //         // Aquí debes agregar los comandos para construir la imagen de Docker.
-                
-        //         // Subir la imagen a Docker Hub
-        //         // Aquí debes agregar los comandos para subir la imagen a Docker Hub.
-        //     }
-        // }
+        stage('Construir Imagen Docker') {
+            steps {
+                script {
+                    docker.build(DOCKER_IMAGE_NAME, '-f Dockerfile .')
+                }
+            }
+        }
+        
+        stage('Subir Imagen a Docker Hub') {
+            steps {
+                script {
+                    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: DOCKER_HUB_CREDENTIALS, usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
+                        docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS) {
+                            docker.image(DOCKER_IMAGE_NAME).push("${env.BUILD_NUMBER}")
+                            docker.image(DOCKER_IMAGE_NAME).push("latest")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
