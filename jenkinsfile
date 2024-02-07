@@ -22,8 +22,6 @@ pipeline {
         
         stage('Ejecutar Pruebas Unitarias') {
             steps {
-
-                sh 'python3 ops.py'
                 // Instalar las dependencias necesarias (si es necesario)
                 bat 'pip install -r requirements.txt'
                 
