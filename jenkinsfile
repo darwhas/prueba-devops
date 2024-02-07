@@ -2,10 +2,21 @@ pipeline {
     agent any
     
     stages {
+        stage('Verificar Repositorio') {
+            steps {
+                bat '''
+                    SET repoDir=prueba-devops
+                    IF EXIST %repoDir% (
+                        RMDIR /S /Q %repoDir%
+                    )
+                '''
+            }
+        }
+        
         stage('Clonar Repositorio') {
             steps {
                 // Clonar el repositorio de GitHub
-                bat 'git clone https://github.com/darwhas/prueba-devops.git'
+                git branch: 'develop', url: 'https://github.com/darwhas/prueba-devops.git'
             }
         }
         
