@@ -11,7 +11,7 @@ pipeline {
         
         stage('Ejecutar Pruebas Unitarias') {
             steps {
-                 // Instalar las dependencias necesarias (si es necesario)
+                // Instalar las dependencias necesarias (si es necesario)
                 sh 'pip install -r requirements.txt'
                 
                 // Ejecutar las pruebas unitarias con pytest
@@ -24,8 +24,7 @@ pipeline {
                     junit 'pytest.xml'  // Archivo XML generado por pytest
                 }
             }
-
-        // }
+        }
         
         // stage('Análisis SonarQube') {
         //     steps {
@@ -40,14 +39,14 @@ pipeline {
         //     }
         // }
         
-        //stage('Construir y Subir Imagen Docker') {
-            //steps {
-                // Construir la imagen de Docker
-                // Aquí debes agregar los comandos para construir la imagen de Docker.
+        // stage('Construir y Subir Imagen Docker') {
+        //     steps {
+        //         // Construir la imagen de Docker
+        //         // Aquí debes agregar los comandos para construir la imagen de Docker.
                 
-                // Subir la imagen a Docker Hub
-                // Aquí debes agregar los comandos para subir la imagen a Docker Hub.
-            //}
-        //}
+        //         // Subir la imagen a Docker Hub
+        //         // Aquí debes agregar los comandos para subir la imagen a Docker Hub.
+        //     }
+        // }
     }
 }
