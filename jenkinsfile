@@ -5,17 +5,17 @@ pipeline {
         stage('Clonar Repositorio') {
             steps {
                 // Clonar el repositorio de GitHub
-                git branch: 'develop', url: 'https://github.com/darwhas/prueba-devops.git'
+                bat 'git clone https://github.com/darwhas/prueba-devops.git'
             }
         }
         
         stage('Ejecutar Pruebas Unitarias') {
             steps {
                 // Instalar las dependencias necesarias (si es necesario)
-                sh 'pip install -r requirements.txt'
+                bat 'pip install -r requirements.txt'
                 
                 // Ejecutar las pruebas unitarias con pytest
-                sh 'pytest'
+                bat 'pytest'
             }
             
             post {
@@ -31,7 +31,7 @@ pipeline {
         //         script {
         //             def scannerHome = tool 'SonarScanner'
         //             withSonarQubeEnv('SonarQubeServer') {
-        //                 sh "${scannerHome}/bin/sonar-scanner \
+        //                 bat "${scannerHome}\\bin\\sonar-scanner \
         //                     -Dsonar.projectKey=prueba_devops \
         //                     -Dsonar.sources=."
         //             }
