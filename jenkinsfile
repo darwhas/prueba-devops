@@ -26,35 +26,35 @@ pipeline {
             }
         }
         
-        // stage('Ejecutar Pruebas Unitarias') {
-        //     steps {
-        //         // Instalar las dependencias necesarias (si es necesario)
-        //         bat 'pip install -r requirements.txt'
+        stage('Ejecutar Pruebas Unitarias') {
+            steps {
+                // Instalar las dependencias necesarias (si es necesario)
+                bat 'pip install -r requirements.txt'
                 
-        //         // Ejecutar las pruebas unitarias con pytest
-        //         bat 'pytest'
-        //     }
+                // Ejecutar las pruebas unitarias con pytest
+                bat 'pytest'
+            }
             
-        //     post {
-        //         always {
-        //             // Publicar los resultados de las pruebas unitarias
-        //             junit 'pytest.xml'  // Archivo XML generado por pytest
-        //         }
-        //     }
-        // }
+            post {
+                always {
+                    // Publicar los resultados de las pruebas unitarias
+                    junit 'pytest.xml'  // Archivo XML generado por pytest
+                }
+            }
+        }
         
-        // stage('Análisis SonarQube') {
-        //     steps {
-        //         script {
-        //             def scannerHome = tool 'SonarScanner'
-        //             withSonarQubeEnv('SonarQubeServer') {
-        //                 bat "${scannerHome}\\bin\\sonar-scanner \
-        //                     -Dsonar.projectKey=prueba_devops \
-        //                     -Dsonar.sources=."
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Análisis SonarQube') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('SonarQubeServer') {
+                        bat "${scannerHome}\\bin\\sonar-scanner \
+                            -Dsonar.projectKey=prueba_devops \
+                            -Dsonar.sources=."
+                    }
+                }
+            }
+        }
         
         stage('Construir Imagen Docker') {
             steps {
@@ -76,5 +76,17 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy Docker Container') {
+            steps {
+                script {
+                    // Desplegar el contenedor Docker en el servidor
+                    sshagent(['credentials_id']) {
+                        sh 'ssh usuario@servidor "docker-compose up -d"'
+                    }
+                }
+            }
+        }
+
     }
 }
